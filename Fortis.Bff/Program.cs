@@ -1,9 +1,20 @@
-using Scalar.AspNetCore; // <-- 1. Bunu en tepeye ekle
+using Scalar.AspNetCore; 
+using StackExchange.Redis;   
+using Fortis.Bff.Interfaces; 
+using Fortis.Bff.Services;   
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi(); // Bu kalacak, JSON'u bu üretiyor.
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => 
+    ConnectionMultiplexer.Connect("localhost:6379"));
+
+    // 2. Session Servisini Kaydet
+builder.Services.AddScoped<ISessionService, RedisSessionService>();
+
+
 
 var app = builder.Build();
 

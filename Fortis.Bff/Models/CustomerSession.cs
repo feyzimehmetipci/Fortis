@@ -8,4 +8,5 @@ public class CustomerSession
     public string FullName { get; set; }
     public string DownstreamToken { get; set; } // Gerçek JWT burada saklı (Sır gibi)
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public List<string> Roles { get; set; } = new();
 }
