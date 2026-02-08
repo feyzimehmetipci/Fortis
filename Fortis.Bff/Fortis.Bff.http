@@ -1,0 +1,6 @@
+@Fortis.Bff_HostAddress = http://localhost:5199
+
+GET {{Fortis.Bff_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
