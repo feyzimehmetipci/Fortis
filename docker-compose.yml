@@ -1,5 +1,7 @@
 version: '3.8'
+
 services:
+  # 1. Dağıtık Önbellek (Session Yönetimi)
   fortis-redis:
     image: redis:alpine
     container_name: fortis-redis
@@ -9,5 +11,32 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
+  # 2. Redis Yönetim Paneli (Görsel Arayüz)
+  fortis-redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: fortis-redis-commander
+    environment:
+      - REDIS_HOSTS=local:fortis-redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - fortis-redis
+    restart: unless-stopped
+
+  # 3. Kalıcı Veritabanı (Identity & Yetkilendirme)
+  fortis-postgres:
+    image: postgres:15-alpine # Macbook'larda (ARM) çok daha hızlı ve sorunsuz çalışır
+    container_name: fortis-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=fortis_super_secret_123 # Prodüksiyonda bunu .env dosyasına alacağız
+      - POSTGRES_DB=FortisIdentityDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
 volumes:
   redis_data:
+  postgres_data: # Veritabanı silinirse veriler uçmasın diye kalıcı disk alanı

@@ -9,12 +9,20 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi(); // Bu kalacak, JSON'u bu üretiyor.
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp => 
-    ConnectionMultiplexer.Connect("localhost:6379"));
+    ConnectionMultiplexer.Connect("127.0.0.1:6379,abortConnect=false"));
 
     // 2. Session Servisini Kaydet
 builder.Services.AddScoped<ISessionService, RedisSessionService>();
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllDev", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -25,6 +33,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAllDev");
+
 app.UseAuthorization();
 app.MapControllers();
 
